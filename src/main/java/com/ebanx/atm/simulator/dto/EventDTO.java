@@ -8,6 +8,6 @@ import lombok.Data;
 public class EventDTO {
     private String type;
     private String destination;
-    private String amount;
+    private int amount;
     private String origin;
 }
