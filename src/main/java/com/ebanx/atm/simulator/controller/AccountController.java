@@ -10,9 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @RestController
 public class AccountController {
     @Autowired
@@ -21,11 +18,8 @@ public class AccountController {
     @GetMapping("/balance")
     ResponseEntity<Object> getAccountBalance(@RequestParam String account_id){
         Account account = accountService.getAccountById(account_id);
-        Map<String, Account> response = new HashMap<>();
-        if(account != null){
-            response.put("destination", account);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        }
+        if(account != null)
+            return new ResponseEntity<>(account.getBalance(), HttpStatus.OK);
 
         return new ResponseEntity<>("0", HttpStatus.NOT_FOUND);
     }

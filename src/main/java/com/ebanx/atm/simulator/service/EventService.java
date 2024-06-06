@@ -6,9 +6,7 @@ import com.ebanx.atm.simulator.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class EventService {
@@ -27,9 +25,7 @@ public class EventService {
      * @return A map containing the updated account under the key "destination".
      * @throws IllegalArgumentException if the account ID is null, empty, or invalid.
      */
-    public Map<String, Account> getAccountBalanceById(String id, int amount) {
-        Map<String, Account> response = new HashMap<>();
-
+    public String getAccountBalanceById(String id, int amount) {
         if (id == null || id.isEmpty())
             throw new IllegalArgumentException("Account ID cannot be null or empty");
 
@@ -48,9 +44,9 @@ public class EventService {
         }
 
         accountRepository.save(account);
-        response.put("destination", account);
 
-        return response;
+        return "{\"destination\": "+"{\"id\":\"" + account.getId() + "\", \"balance\":" + account.getBalance() + "}}";
+
     }
 
     /**
@@ -60,8 +56,7 @@ public class EventService {
      * @param amount The amount to withdraw.
      * @return A map containing the updated account under the key "origin", or null if the account does not exist or has insufficient balance.
      */
-    public Map<String, Account> withdrawFromAccount(String id, int amount) {
-        Map<String, Account> response = new HashMap<>();
+    public String withdrawFromAccount(String id, int amount) {
         Account account = accountService.getAccountById(id);
         if (account == null)
             return null;
@@ -69,9 +64,8 @@ public class EventService {
             return null;
         performWithdrawal(account, amount);
         accountRepository.save(account);
-        response.put("origin", account);
 
-        return response;
+        return "{\"origin\": "+"{\"id\":\"" + account.getId() + "\", \"balance\":" + account.getBalance() + "}}";
     }
 
     /**
@@ -81,23 +75,20 @@ public class EventService {
      * @param dto The EventDTO containing the details of the transfer.
      * @return A map containing the origin and destination accounts under the keys "origin" and "destination" respectively, or null if the origin account does not exist.
      */
-    public Map<String, Account> transferBetweenAccounts(EventDTO dto) {
-        Map<String, Account> response = new HashMap<>();
+    public String transferBetweenAccounts(EventDTO dto) {
         Account origin = accountService.getAccountById(dto.getOrigin());
         if (origin == null)
             return null;
 
         Account destination = accountService.getAccountById(dto.getDestination());
         if (destination == null)
-            destination = accountService.createNewAccount(Long.parseLong(dto.getDestination()), dto.getAmount());
+            destination = accountService.createNewAccount(Long.parseLong(dto.getDestination()), 0);
 
         transferBalance(origin, destination, dto.getAmount());
 
         accountRepository.saveAll(List.of(destination, origin));
 
-        response.put("origin", origin);
-        response.put("destination", destination);
-        return response;
+        return "{\"origin\": "+"{\"id\":\"" + origin.getId() + "\", \"balance\":" + origin.getBalance() + "}, \"destination\": {\"id\":\"" + destination.getId() + "\", \"balance\":" + destination.getBalance() + "}}";
     }
 
     private void performWithdrawal(Account account, int amount) {
