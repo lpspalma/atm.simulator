@@ -10,6 +10,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.ebanx.atm.simulator.dto.EventType.DEPOSIT_EVENT;
+import static com.ebanx.atm.simulator.dto.EventType.WITHDRAW_EVENT;
+
 @Slf4j
 @Service
 public class EventHandler {
@@ -18,23 +24,25 @@ public class EventHandler {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
-    public Account eventHandler(JsonNode request){
+    public Map<String, Account>  eventHandler(JsonNode request){
         EventDTO dto;
-        Account response;
         try{
             dto = mapper.treeToValue(request, EventDTO.class);
             EventType eventType = EventType.fromString(dto.getType());
             switch (eventType) {
-                case DEPOSIT_EVENT -> response = eventService.getAccountBalanceById(dto);
+                case DEPOSIT_EVENT -> {
+                    return eventService.getAccountBalanceById(DEPOSIT_EVENT, dto.getDestination(), dto.getAmount());
+                }
+                case WITHDRAW_EVENT -> {
+                    return eventService.withdrawFromAccount(WITHDRAW_EVENT, dto.getDestination(), dto.getAmount());
+                }
                 default -> throw new IllegalArgumentException("Unexpected value: " + eventType);
             }
         }catch (IllegalArgumentException | JsonProcessingException e) {
             log.error(e.getMessage());
-            return null;
         }
 
-        return response;
+        return null;
     }
-
 
 }

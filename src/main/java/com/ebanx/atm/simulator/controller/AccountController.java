@@ -19,7 +19,7 @@ public class AccountController {
 
     @GetMapping("/balance")
     ResponseEntity<Object> getAccountBalance(@RequestParam String account_id){
-        Account account = accountService.getAccountBalanceById(account_id);
+        Account account = accountService.getAccountById(account_id);
         Map<String, Account> response = new HashMap<>();
         if(account != null){
             response.put("destination", account);

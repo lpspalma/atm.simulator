@@ -14,7 +14,7 @@ public class AccountService {
     @Autowired
     private AccountRepository accountRepository;
 
-    public Account getAccountBalanceById(String accountId) {
+    public Account getAccountById(String accountId) {
         Account account;
         try{
             account = accountRepository.findById(Long.parseLong(accountId)).orElseThrow();
