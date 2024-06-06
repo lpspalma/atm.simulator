@@ -1,6 +1,5 @@
 package com.ebanx.atm.simulator.controller;
 
-import com.ebanx.atm.simulator.entity.Account;
 import com.ebanx.atm.simulator.service.EventHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
-
 @RestController
 public class EventController {
 
@@ -22,7 +19,7 @@ public class EventController {
     @PostMapping("/event")
     ResponseEntity<Object> handleEvent(@RequestBody JsonNode request) {
         try {
-            Map<String, Account> response = eventHandler.eventHandler(request);
+            String response = eventHandler.eventHandler(request);
             if (response != null && !response.isEmpty())
                 return new ResponseEntity<>(response, HttpStatus.CREATED);
             else
