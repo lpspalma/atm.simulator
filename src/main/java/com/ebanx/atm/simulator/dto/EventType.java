@@ -8,7 +8,7 @@ import lombok.Getter;
 public enum EventType {
     DEPOSIT_EVENT("deposit"),
     WITHDRAW_EVENT("withdraw"),
-    TRANSFER("transfer");
+    TRANSFER_EVENT("transfer");
 
     private final String name;
 
